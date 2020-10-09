@@ -72,9 +72,30 @@ def output_info(info, column_name):
     print()
 
 
-def histogram(info, horizontal_name, vertical_name):
+def raw_to_bar_chart(info, horizontal_name, vertical_name):
     x = info[horizontal_name].to_list()
     y = info[vertical_name].to_list()
+
+    plt.bar(x, y, label='first')
+
+    plt.xlabel(horizontal_name)
+    plt.ylabel(vertical_name)
+
+    plt.title(f'Гистограмма зависимости ${vertical_name}$ от ${horizontal_name}$', fontsize=16)
+    plt.legend()
+    plt.show()
+
+
+def dict_to_bar_chart(info):
+    x = []
+    y = []
+
+    vertical_name = 'count'
+    horizontal_name = 'language'
+
+    for key in info:
+        x.append(key)
+        y.append(info[key])
 
     plt.bar(x, y, label='first')
 
@@ -96,8 +117,9 @@ output_info(data, 'vote_count')
 print('LANGUAGES')
 print_dict(lang_dict(data))
 
-histogram(data, 'popularity', 'budget')
-histogram(data, 'vote_average', 'budget')
-histogram(data, 'vote_average', 'revenue')
-histogram(data, 'vote_average', 'vote_count')
-histogram(data, 'vote_average', 'runtime')
+raw_to_bar_chart(data, 'popularity', 'budget')
+raw_to_bar_chart(data, 'vote_average', 'budget')
+raw_to_bar_chart(data, 'vote_average', 'revenue')
+raw_to_bar_chart(data, 'vote_average', 'vote_count')
+raw_to_bar_chart(data, 'vote_average', 'runtime')
+dict_to_bar_chart(lang_dict(data))

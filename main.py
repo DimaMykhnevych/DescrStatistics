@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def movies_mean(movies):
     return statistics.mean(movies)
 
@@ -107,19 +108,68 @@ def dict_to_bar_chart(info):
     plt.show()
 
 
-data = pd.read_csv('movies_csv.csv')
-output_info(data, 'budget')
-output_info(data, 'popularity')
-output_info(data, 'revenue')
-output_info(data, 'runtime')
-output_info(data, 'vote_average')
-output_info(data, 'vote_count')
-print('LANGUAGES')
-print_dict(lang_dict(data))
+def get_weighted_ratings(info, avg_rating):
+    vote_counts = info['vote_count'].to_list()
+    minimum_number_of_votes = min(without_zeros(vote_counts))
+    vote_avg = info['vote_average'].to_list()
+    original_titles = info['original_title'].to_list()
 
-raw_to_bar_chart(data, 'popularity', 'budget')
-raw_to_bar_chart(data, 'vote_average', 'budget')
-raw_to_bar_chart(data, 'vote_average', 'revenue')
-raw_to_bar_chart(data, 'vote_average', 'vote_count')
-raw_to_bar_chart(data, 'vote_average', 'runtime')
-dict_to_bar_chart(lang_dict(data))
+    weighted_rates = []
+    for i in range(len(vote_counts)):
+        if vote_counts[i] == 0:
+            continue
+        rate = (1.0 * vote_counts[i] / (vote_counts[i] + minimum_number_of_votes) * vote_avg[i]) + \
+               (1.0 * minimum_number_of_votes / (minimum_number_of_votes + vote_counts[i]) * avg_rating)
+        name = original_titles[i]
+        weighted_rates.append((rate, name))
+
+    return weighted_rates
+
+
+def print_top(movies, top):
+    print(f'Top {top} movies:')
+    for i in range(top):
+        rate, name = movies[i]
+        print(f'{i + 1}.', name, rate)
+    print()
+
+
+# reading data
+data = pd.read_csv('movies_csv.csv')
+
+# statistics
+# output_info(data, 'budget')
+# output_info(data, 'popularity')
+# output_info(data, 'revenue')
+# output_info(data, 'runtime')
+# output_info(data, 'vote_average')
+# output_info(data, 'vote_count')
+#
+# print('LANGUAGES')
+# print_dict(lang_dict(data))
+
+# bar charts
+# raw_to_bar_chart(data, 'popularity', 'budget')
+# raw_to_bar_chart(data, 'vote_average', 'budget')
+# raw_to_bar_chart(data, 'vote_average', 'revenue')
+# raw_to_bar_chart(data, 'vote_average', 'vote_count')
+# raw_to_bar_chart(data, 'vote_average', 'runtime')
+# dict_to_bar_chart(lang_dict(data))
+
+# popularity rate
+vote_averages = data['vote_average'].to_list()
+average_rating = sum(vote_averages) / len(vote_averages)
+
+weighted_ratings = get_weighted_ratings(data, average_rating)
+weighted_ratings.sort(reverse=True)
+
+print_top(weighted_ratings, 10)
+
+# genres
+
+
+# average_rating = median
+weighted_ratings = get_weighted_ratings(data, statistics.mode(vote_averages))
+weighted_ratings.sort(reverse=True)
+
+print_top(weighted_ratings, 10)

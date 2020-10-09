@@ -108,13 +108,20 @@ def dict_to_bar_chart(info):
     plt.show()
 
 
+def is_upper_case_letter(letter):
+    return 'A' <= letter <= 'Z'
+
+
 def get_weighted_ratings(info, avg_rating):
     vote_counts = info['vote_count'].to_list()
     minimum_number_of_votes = min(without_zeros(vote_counts))
     vote_avg = info['vote_average'].to_list()
     original_titles = info['original_title'].to_list()
 
+    gens = dict()
+    raw_genres = info['genres'].to_list()
     weighted_rates = []
+
     for i in range(len(vote_counts)):
         if vote_counts[i] == 0:
             continue
@@ -123,10 +130,21 @@ def get_weighted_ratings(info, avg_rating):
         name = original_titles[i]
         weighted_rates.append((rate, name))
 
-    return weighted_rates
+        splitted = raw_genres[i].split('"')
+        for word in splitted:
+            if not is_upper_case_letter(word[0]):
+                continue
+            if word not in gens:
+                gens[word] = [(rate, name)]
+            else:
+                if weighted_rates[-1] not in gens[word]:
+                    gens[word].append(weighted_rates[-1])
+
+    return weighted_rates, gens
 
 
-def print_top(movies, top):
+def print_top_movies(movies, top):
+    movies.sort(reverse=True)
     print(f'Top {top} movies:')
     for i in range(top):
         rate, name = movies[i]
@@ -134,42 +152,49 @@ def print_top(movies, top):
     print()
 
 
+def print_top_genres(gens, top):
+    for genre in gens.keys():
+        print(f'Top {top} {genre} movies:')
+        gens[genre].sort(reverse=True)
+        for j in range(min(top, len(gens[genre]))):
+            rate, name = gens[genre][j]
+            print(f'{j + 1}.', name, rate)
+        print()
+
+
 # reading data
-data = pd.read_csv('movies_csv.csv')
+data = pd.read_csv('tmdb_5000_movies.csv')
 
 # statistics
-# output_info(data, 'budget')
-# output_info(data, 'popularity')
-# output_info(data, 'revenue')
-# output_info(data, 'runtime')
-# output_info(data, 'vote_average')
-# output_info(data, 'vote_count')
-#
-# print('LANGUAGES')
-# print_dict(lang_dict(data))
+output_info(data, 'budget')
+output_info(data, 'popularity')
+output_info(data, 'revenue')
+output_info(data, 'runtime')
+output_info(data, 'vote_average')
+output_info(data, 'vote_count')
+
+print('LANGUAGES')
+print_dict(lang_dict(data))
 
 # bar charts
-# raw_to_bar_chart(data, 'popularity', 'budget')
-# raw_to_bar_chart(data, 'vote_average', 'budget')
-# raw_to_bar_chart(data, 'vote_average', 'revenue')
-# raw_to_bar_chart(data, 'vote_average', 'vote_count')
-# raw_to_bar_chart(data, 'vote_average', 'runtime')
-# dict_to_bar_chart(lang_dict(data))
+raw_to_bar_chart(data, 'popularity', 'budget')
+raw_to_bar_chart(data, 'vote_average', 'budget')
+raw_to_bar_chart(data, 'vote_average', 'revenue')
+raw_to_bar_chart(data, 'vote_average', 'vote_count')
+raw_to_bar_chart(data, 'vote_average', 'runtime')
+dict_to_bar_chart(lang_dict(data))
 
 # popularity rate
 vote_averages = data['vote_average'].to_list()
 average_rating = sum(vote_averages) / len(vote_averages)
 
-weighted_ratings = get_weighted_ratings(data, average_rating)
-weighted_ratings.sort(reverse=True)
+weighted_ratings, genres = get_weighted_ratings(data, average_rating)
 
-print_top(weighted_ratings, 10)
-
-# genres
-
+print_top_movies(weighted_ratings, 10)
+print_top_genres(genres, 5)
 
 # average_rating = median
-weighted_ratings = get_weighted_ratings(data, statistics.mode(vote_averages))
-weighted_ratings.sort(reverse=True)
+weighted_ratings, genres = get_weighted_ratings(data, statistics.mode(vote_averages))
 
-print_top(weighted_ratings, 10)
+print_top_movies(weighted_ratings, 10)
+print_top_genres(genres, 5)

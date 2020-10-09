@@ -1,9 +1,9 @@
 import math
-
-import pandas as pd
 import statistics
-import numpy as np
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 def movies_mean(movies):
     return statistics.mean(movies)
@@ -72,6 +72,20 @@ def output_info(info, column_name):
     print()
 
 
+def histogram(info, horizontal_name, vertical_name):
+    x = info[horizontal_name].to_list()
+    y = info[vertical_name].to_list()
+
+    plt.bar(x, y, label='first')
+
+    plt.xlabel(horizontal_name)
+    plt.ylabel(vertical_name)
+
+    plt.title(f'Гистограмма зависимости ${vertical_name}$ от ${horizontal_name}$', fontsize=16)
+    plt.legend()
+    plt.show()
+
+
 data = pd.read_csv('movies_csv.csv')
 output_info(data, 'budget')
 output_info(data, 'popularity')
@@ -81,3 +95,9 @@ output_info(data, 'vote_average')
 output_info(data, 'vote_count')
 print('LANGUAGES')
 print_dict(lang_dict(data))
+
+histogram(data, 'popularity', 'budget')
+histogram(data, 'vote_average', 'budget')
+histogram(data, 'vote_average', 'revenue')
+histogram(data, 'vote_average', 'vote_count')
+histogram(data, 'vote_average', 'runtime')

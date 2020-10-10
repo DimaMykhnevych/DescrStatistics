@@ -54,8 +54,11 @@ def print_dict(dictionary):
         print(i, ': ', dictionary[i])
 
 
-def output_info(info, column_name):
-    c = without_zeros(info[column_name].to_list())
+def output_info(info, column_name, values_list=None):
+    if values_list is None:
+        c = without_zeros(info[column_name].to_list())
+    else:
+        c = values_list
     print(column_name.upper())
     print('Mean: ', movies_mean(c))
     print('Dispersion: ', dispersion(c))
@@ -161,6 +164,11 @@ def print_top_genres(gens, top):
             print(f'{j + 1}.', name, rate)
         print()
 
+
+# # user_input
+# user_input = [int(i) for i in input().split()]
+# print(sorted(user_input))
+# output_info(None, 'statistics', user_input)
 
 # reading data
 data = pd.read_csv('movies_csv.csv')

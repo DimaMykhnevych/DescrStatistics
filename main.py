@@ -163,7 +163,7 @@ def print_top_genres(gens, top):
 
 
 # reading data
-data = pd.read_csv('tmdb_5000_movies.csv')
+data = pd.read_csv('movies_csv.csv')
 
 # statistics
 output_info(data, 'budget')

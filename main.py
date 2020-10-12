@@ -170,6 +170,71 @@ def print_top_genres(gens, top):
 # print(sorted(user_input))
 # output_info(None, 'statistics', user_input)
 
+# def mean(listMovies):
+#     summa = 0;
+#     for i in range(len(listMovies)):
+#         summa += listMovies[i]
+#     return summa/len(listMovies)
+#
+#
+# def dispersions(listMovies):
+#     if len(listMovies) == 1:
+#         return listMovies[0]
+#     summa = 0
+#     means = mean(listMovies)
+#     for i in range(len(listMovies)):
+#         value = listMovies[i] - means ** 2
+#         summa += value
+#     return summa / (len(listMovies) - 1)
+#
+#
+# def deviations(listMovies):
+#     return dispersions(listMovies) ** 0.5
+#
+#
+# def medians(listMovies):
+#     if len(listMovies) == 1:
+#         return listMovies[0]
+#     newl = sorted(listMovies);
+#     n = len(listMovies)
+#     if n % 2 == 0:
+#         return newl[(n - 1) / 2]
+#     else:
+#         return (newl[n / 2 - 1] + newl[n / 2]) / 2
+#
+#
+# def sample_spans(movies):
+#     return max(movies) - min(movies)
+#
+#
+def mode(movies):
+    dictionary = {}
+    for i in movies:
+        if i in dictionary.keys():
+            dictionary[i] += 1
+        else:
+            dictionary[i] = 1
+    maxim = max(dictionary.values())
+    returnedList = []
+    for i in range(dictionary.keys()):
+        if i == maxim:
+            returnedList.append(i)
+    unique_items = set()
+    for i in range(len(movies)):
+        unique_items.add(i)
+    if len(unique_items) == len(returnedList):
+        print('Antimodal set')
+        return
+    return returnedList
+
+#
+# def quant(movies, quantils):
+#     sorted_movies = sorted(movies)
+#     q = quantils * len(sorted_movies)
+#     rounded_coef = int(q)
+#     return sorted_movies[rounded_coef]
+
+
 # reading data
 data = pd.read_csv('movies_csv.csv')
 
